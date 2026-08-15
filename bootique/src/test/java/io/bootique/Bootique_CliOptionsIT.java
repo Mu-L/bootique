@@ -331,7 +331,7 @@ public class Bootique_CliOptionsIT {
 
     @Test
     public void commandWithOptionWithDefaultValue() {
-        BQRuntime runtime = appManager.runtime(Bootique.app("-cmd", "--option")
+        BQRuntime runtime = appManager.runtime(Bootique.app("--cmd", "--option")
                 .module(b -> BQCoreModule.extend(b).addCommand(CommandWithDefaultOptionValue.class)));
 
         Cli cli = runtime.getInstance(Cli.class);

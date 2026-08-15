@@ -22,6 +22,26 @@
 
 _Upgrade instructions to earlier versions, up to and including 3.0, are available [here](UPGRADE-3.0.md)_
 
+## 4.0-M6
+
+### [bootique #385](https://github.com/bootique/bootique/issues/385) Long CLI options can no longer be spelled with a single dash
+
+Bootique now follows the POSIX / GNU `getopt_long` rule: a double dash introduces a full option name, while a single
+dash introduces one or more single-char short names. Previously a full name behind a single dash was accepted as well,
+so `-server` worked as a synonym of `--server`. It no longer does. `-server` is now read as a cluster of short
+options, i.e. `-s -e -r -v -e -r`.
+
+Check your launch scripts for any places where an option is spelled with a single dash and more than
+one character:
+
+```bash
+# before
+java -jar myapp.jar -server -config=myconfig.yml
+
+# after
+java -jar myapp.jar --server --config=myconfig.yml
+```
+
 ## 4.0-M4
 
 ### [bootique-jetty #137](https://github.com/bootique/bootique-jetty/issues/137) CORS is now built into `bootique-jetty`, `bootique-jetty-cors` is deprecated

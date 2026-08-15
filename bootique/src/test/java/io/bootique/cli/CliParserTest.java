@@ -61,16 +61,34 @@ public class CliParserTest {
         assertTrue(parse("-m").hasOption("m"));
         assertFalse(parse("-m").hasOption("val"));
 
-        // a single-dash token spelling out a full option name is that option, not a cluster
-        assertTrue(parse("-me").hasOption("me"));
+        // a full name behind a single dash is a cluster, not that option
+        assertThrows(BootiqueException.class, () -> parse("-me"));
+    }
+
+    @Test
+    public void fullNameBehindSingleDash() {
+        // "-me" is "-m -e", and "e" is not an option
+        BootiqueException e = assertThrows(BootiqueException.class, () -> parse("-me"));
+        assertEquals("e is not a recognized option. Did you mean \"--me\"?", e.getMessage());
+
+        // ... and it stays a cluster even when every char of it happens to be a valid option
+        CliParser p = new CliParser(List.of(
+                OptionMetadata.builder("ab").shortName(null).build(),
+                OptionMetadata.builder("a").shortName(null).build(),
+                OptionMetadata.builder("b").shortName(null).build()));
+
+        ParsedArgs parsed = p.parse(new String[]{"-ab"});
+        assertTrue(parsed.hasOption("a"));
+        assertTrue(parsed.hasOption("b"));
+        assertFalse(parsed.hasOption("ab"));
     }
 
     @Test
     public void suppressedShortName() {
         assertTrue(parse("--noshort").hasOption("noshort"));
 
-        // suppressing a short name only takes away the single-char form, a single-dash full name still works
-        assertTrue(parse("-noshort").hasOption("noshort"));
+        // suppressing a short name leaves no single-dash form at all
+        assertThrows(BootiqueException.class, () -> parse("-noshort"));
         assertThrows(BootiqueException.class, () -> parse("-N"));
 
         // a single-char full name is still usable in both forms
@@ -157,6 +175,9 @@ public class CliParserTest {
         parsed = parse("-mv1");
         assertTrue(parsed.hasOption("me"));
         assertEquals(List.of("1"), parsed.optionStrings("val"));
+
+        // a cluster-trailing option takes its value either attached, or as the next argument
+        assertEquals(List.of("1"), parse("-mv", "1").optionStrings("val"));
     }
 
     @Test

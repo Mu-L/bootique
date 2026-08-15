@@ -1,6 +1,7 @@
 ## 4.0-M6
 
 * #384 Replace "jopt" CLI parser with our own
+* #385 Disallow long CLI options with a single dash
 
 ## 4.0-M5
 

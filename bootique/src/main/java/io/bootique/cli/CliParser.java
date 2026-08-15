@@ -32,14 +32,14 @@ import java.util.Map;
 /**
  * Parses app command line arguments against a known set of options.
  *
- * <p>An option is referenced either by its full name ({@code --opt}) or by its single-char short name
- * ({@code -o}). A full name is also recognized after a single dash ({@code -opt}). An option value is either attached
- * with a "=" ({@code --opt=value}, {@code -o=value}) or provided as the next argument ({@code --opt value},
- * {@code -o value}).
+ * <p>An option is referenced either by its full name behind a double dash ({@code --opt}), or by its single-char
+ * short name behind a single dash ({@code -o}). An option value is either attached with a "="
+ * ({@code --opt=value}, {@code -o=value}) or provided as the next argument ({@code --opt value}, {@code -o value}).
  *
- * <p>Short names of options that take no value can be clustered behind a single dash ({@code -abc}). The first
- * option in a cluster that does take a value consumes the rest of the cluster as that value, so {@code -abovalue}
- * passes "value" to option "o".
+ * <p>A single dash is always followed by single-char names, so a longer token behind it is a cluster of such names,
+ * and never a full name. I.e. {@code -abc} means "-a -b -c", and {@code -opt} is not the same as {@code --opt}. The
+ * first option in a cluster that takes a value consumes the rest of the cluster as that value, so both
+ * {@code -abovalue} and {@code -abo value} pass "value" to option "o".
  *
  * <p>Full names are matched exactly. So {@code --conf} will not be matched to an option named "config".
  *
@@ -143,19 +143,18 @@ public class CliParser {
             String name = eq < 0 ? arg.substring(HYPHEN.length()) : arg.substring(HYPHEN.length(), eq);
             String value = eq < 0 ? null : arg.substring(eq + 1);
 
-            // a single-dash token may spell out an option name in full, and only if it doesn't, it is treated as a
-            // cluster of single-char options
-            OptionMetadata option = optionsByAnyName.get(name);
-            if (option != null) {
-                onOption(option, value);
+            // only single-char names are allowed behind a single dash, so anything longer is a cluster of such
+            // names, and never a full name. I.e. "-opt" is not the same as "--opt"
+            if (name.length() == 1) {
+                onOption(optionFor(name), value);
             } else {
-                onShortOptionCluster(arg);
+                onShortOptionCluster(arg, name);
             }
         }
 
-        private void onShortOptionCluster(String arg) {
+        private void onShortOptionCluster(String arg, String name) {
             char[] chars = arg.substring(HYPHEN.length()).toCharArray();
-            validateShortOptionCluster(chars);
+            validateShortOptionCluster(chars, name);
 
             for (int i = 0; i < chars.length; i++) {
                 OptionMetadata option = optionFor(String.valueOf(chars[i]));
@@ -170,13 +169,26 @@ public class CliParser {
             }
         }
 
-        private void validateShortOptionCluster(char[] chars) {
+        private void validateShortOptionCluster(char[] chars, String name) {
             // stop validating past the first option taking a value, as the rest of the cluster is that option's value
             for (char c : chars) {
-                if (acceptsValue(optionFor(String.valueOf(c)))) {
+                OptionMetadata option = optionsByAnyName.get(String.valueOf(c));
+                if (option == null) {
+                    throw new BootiqueException(1, unrecognizedInClusterMessage(c, name));
+                }
+
+                if (acceptsValue(option)) {
                     return;
                 }
             }
+        }
+
+        private String unrecognizedInClusterMessage(char c, String name) {
+            // a common reason for a cluster not to resolve is an attempt to spell a full option name behind a
+            // single dash, so provide a hint when that's what happened
+            return optionsByAnyName.containsKey(name)
+                    ? c + " is not a recognized option. Did you mean \"--" + name + "\"?"
+                    : c + " is not a recognized option";
         }
 
         private void onOption(OptionMetadata option, String value) {
