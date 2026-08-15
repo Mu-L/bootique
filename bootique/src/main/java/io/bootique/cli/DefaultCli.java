@@ -21,46 +21,45 @@ package io.bootique.cli;
 
 import io.bootique.meta.application.OptionMetadata;
 
-import java.util.Collections;
 import java.util.List;
 
 /**
- * A Cli instance over an empty argument list.
+ * A {@link Cli} implementation on top of the Bootique CLI parser.
+ *
+ * @since 4.0
  */
-public final class NoArgsCli implements Cli {
+public class DefaultCli implements Cli {
 
-    private static final Cli INSTANCE = new NoArgsCli();
+    private final ParsedArgs parsed;
+    private final String commandName;
 
-    /**
-     * @deprecated unused
-     */
-    @Deprecated(since = "4.0", forRemoval = true)
-    public static Cli getInstance() {
-        return INSTANCE;
+    public DefaultCli(ParsedArgs parsed, String commandName) {
+        this.parsed = parsed;
+        this.commandName = commandName;
     }
 
     @Override
     public String commandName() {
-        return null;
+        return commandName;
     }
 
     @Override
-    public boolean hasOption(String name) {
-        return false;
-    }
-
-    @Override
-    public List<OptionMetadata> detectedOptions() {
-        return Collections.emptyList();
+    public boolean hasOption(String optionName) {
+        return parsed.hasOption(optionName);
     }
 
     @Override
     public List<String> optionStrings(String name) {
-        return Collections.emptyList();
+        return parsed.optionStrings(name);
     }
 
     @Override
     public List<String> standaloneArguments() {
-        return Collections.emptyList();
+        return parsed.standaloneArguments();
+    }
+
+    @Override
+    public List<OptionMetadata> detectedOptions() {
+        return parsed.detectedOptions();
     }
 }

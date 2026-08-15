@@ -1,3 +1,7 @@
+## 4.0-M6
+
+* #384 Replace "jopt" CLI parser with our own
+
 ## 4.0-M5
 
 * #285 BQCoreModuleExtender.setProperty causes ArrayIndexOutOfBoundsException for multiple array indices

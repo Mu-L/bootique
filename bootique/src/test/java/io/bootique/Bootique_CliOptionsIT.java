@@ -317,6 +317,19 @@ public class Bootique_CliOptionsIT {
     }
 
     @Test
+    public void missingOptionDefaultValue_OtherArgs() {
+        // same as "missingOptionDefaultValue", only with a non-empty command line, so that the CLI parser is
+        // actually engaged instead of the "no args" shortcut
+        BQRuntime runtime = appManager.runtime(Bootique.app("--help")
+                .module(b -> BQCoreModule.extend(b).addOptions(
+                        OptionMetadata.builder("option").valueOptionalWithDefault("val").build()
+                )));
+        Cli cli = runtime.getInstance(Cli.class);
+        assertFalse(cli.hasOption("option"));
+        assertNull(cli.optionString("option"));
+    }
+
+    @Test
     public void commandWithOptionWithDefaultValue() {
         BQRuntime runtime = appManager.runtime(Bootique.app("-cmd", "--option")
                 .module(b -> BQCoreModule.extend(b).addCommand(CommandWithDefaultOptionValue.class)));

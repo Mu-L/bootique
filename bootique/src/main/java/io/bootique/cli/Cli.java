@@ -19,7 +19,7 @@
 
 package io.bootique.cli;
 
-import joptsimple.OptionSpec;
+import io.bootique.meta.application.OptionMetadata;
 
 import java.util.List;
 
@@ -37,7 +37,11 @@ public interface Cli {
 
     boolean hasOption(String name);
 
-    List<OptionSpec<?>> detectedOptions();
+    /**
+     * Returns the options present on the command line in the order of their appearance. An option that was specified
+     * more than once is present in the returned List more than once.
+     */
+    List<OptionMetadata> detectedOptions();
 
     /**
      * Returns a List of String values for the specified option name.

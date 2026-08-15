@@ -27,7 +27,6 @@ import io.bootique.config.jackson.merger.JsonConfigurationMerger;
 import io.bootique.config.jackson.parser.JsonConfigurationParser;
 import io.bootique.meta.application.OptionMetadata;
 import jakarta.inject.Inject;
-import joptsimple.OptionSpec;
 
 import java.util.Collections;
 import java.util.List;
@@ -78,12 +77,12 @@ public class CliCustomOptionsConfigurationLoader implements JsonConfigurationLoa
             return mutableInput;
         }
 
-        List<OptionSpec<?>> detectedOptions = cli.detectedOptions();
+        List<OptionMetadata> detectedOptions = cli.detectedOptions();
         if (detectedOptions.isEmpty()) {
             return mutableInput;
         }
 
-        for (OptionSpec<?> cliOpt : detectedOptions) {
+        for (OptionMetadata cliOpt : detectedOptions) {
 
             OptionMetadata omd = findMetadata(cliOpt);
             if (omd == null) {
@@ -112,15 +111,13 @@ public class CliCustomOptionsConfigurationLoader implements JsonConfigurationLoa
         return mutableInput;
     }
 
-    private OptionMetadata findMetadata(OptionSpec<?> option) {
+    private OptionMetadata findMetadata(OptionMetadata option) {
 
-        List<String> optionNames = option.options();
-
-        // TODO: allow lookup of option metadata by name to avoid linear scans...
-        // Though we are dealing with small collection, so shouldn't be too horrible.
+        // Matching by name, not identity. "cli.detectedOptions()" mostly returns the very instances present in this
+        // Set, but not always.
 
         for (OptionMetadata omd : optionMetadata) {
-            if (optionNames.contains(omd.getName())) {
+            if (option.getName().equals(omd.getName())) {
                 return omd;
             }
         }

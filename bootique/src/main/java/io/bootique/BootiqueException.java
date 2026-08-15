@@ -28,7 +28,7 @@ import io.bootique.command.CommandOutcome;
  */
 public class BootiqueException extends RuntimeException {
 
-    private CommandOutcome outcome;
+    private final CommandOutcome outcome;
 
     public BootiqueException(int exitCode, String message) {
         this.outcome = CommandOutcome.failed(exitCode, message, this);

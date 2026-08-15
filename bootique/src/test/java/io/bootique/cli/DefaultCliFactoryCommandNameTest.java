@@ -17,9 +17,8 @@
  * under the License.
  */
 
-package io.bootique.jopt;
+package io.bootique.cli;
 
-import io.bootique.cli.Cli;
 import io.bootique.command.Command;
 import io.bootique.command.CommandManager;
 import io.bootique.command.CommandOutcome;
@@ -38,7 +37,7 @@ import java.util.Map;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-public class JoptCliFactoryCommandNameTest {
+public class DefaultCliFactoryCommandNameTest {
 
     private Map<String, ManagedCommand> commands;
 
@@ -104,7 +103,7 @@ public class JoptCliFactoryCommandNameTest {
         ApplicationMetadata.Builder appBuilder = ApplicationMetadata.builder();
         commands.values().forEach(c -> appBuilder.addCommand(c.getCommand().getMetadata()));
 
-        return new JoptCliFactory(() -> commandManager, appBuilder.build()).createCli(argsArray);
+        return new DefaultCliFactory(() -> commandManager, new CliParser(appBuilder.build().getCliOptions())).createCli(argsArray);
     }
 
 }

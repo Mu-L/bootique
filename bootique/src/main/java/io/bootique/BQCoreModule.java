@@ -23,6 +23,8 @@ import com.fasterxml.jackson.databind.JsonNode;
 import io.bootique.annotation.*;
 import io.bootique.cli.Cli;
 import io.bootique.cli.CliFactory;
+import io.bootique.cli.CliParser;
+import io.bootique.cli.DefaultCliFactory;
 import io.bootique.command.*;
 import io.bootique.config.ConfigurationFactory;
 import io.bootique.config.PolymorphicConfiguration;
@@ -49,7 +51,6 @@ import io.bootique.help.config.DefaultConfigHelpGenerator;
 import io.bootique.help.config.HelpConfigCommand;
 import io.bootique.jackson.DefaultJacksonService;
 import io.bootique.jackson.JacksonService;
-import io.bootique.jopt.JoptCliFactory;
 import io.bootique.log.BootLogger;
 import io.bootique.meta.application.ApplicationMetadata;
 import io.bootique.meta.application.ApplicationMetadataFactory;
@@ -233,7 +234,8 @@ public class BQCoreModule implements BQModule {
     CliFactory provideCliFactory(
             Provider<CommandManager> commandManagerProvider,
             ApplicationMetadata applicationMetadata) {
-        return new JoptCliFactory(commandManagerProvider, applicationMetadata);
+        CliParser parser = new CliParser(applicationMetadata.getCliOptions());
+        return new DefaultCliFactory(commandManagerProvider, parser);
     }
 
     @Provides

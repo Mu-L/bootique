@@ -20,7 +20,7 @@
 
 # UPGRADE INSTRUCTIONS
 
-_Upgrade instructions to earlier versions, up to and including 3.0, are available [here](UPGRADE-3.0.md)_ 
+_Upgrade instructions to earlier versions, up to and including 3.0, are available [here](UPGRADE-3.0.md)_
 
 ## 4.0-M4
 
