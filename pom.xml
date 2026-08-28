@@ -50,7 +50,7 @@
     </modules>
 
     <properties>
-        <commons.lang.version>3.18.0</commons.lang.version>
+        <commons.lang.version>3.20.0</commons.lang.version>
         <commons.compress.version>1.26.1</commons.compress.version>
         <commons.io.version>2.21.0</commons.io.version>
         <jakarta.inject.version>2.0.1</jakarta.inject.version>
