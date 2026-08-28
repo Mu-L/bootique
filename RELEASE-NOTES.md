@@ -2,6 +2,7 @@
 
 * #384 Replace "jopt" CLI parser with our own
 * #385 Disallow long CLI options with a single dash
+* #387 Bump commons-io to 2.21.0
 
 ## 4.0-M5
 
