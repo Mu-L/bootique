@@ -4,6 +4,7 @@
 * #385 Disallow long CLI options with a single dash
 * #387 Bump commons-io to 2.21.0
 * #388 Bump commons-lang to 3.20.0
+* #389 Upgrade commons-compress to 1.28.0
 
 ## 4.0-M5
 
